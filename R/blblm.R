@@ -1,5 +1,6 @@
 #' @import purrr
 #' @import stats
+#' @importFrom utils capture.output
 #' @importFrom magrittr %>%
 #' @details
 #' Linear Regression with Little Bag of Bootstraps
@@ -12,7 +13,7 @@ utils::globalVariables(c("."))
 
 
 #' @export
-blblm <- function(formula, data, m = 10, B = 5000) {
+blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE) {
   data_list <- split_data(data, m)
   estimates <- map(
     data_list,
