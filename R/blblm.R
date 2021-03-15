@@ -126,7 +126,7 @@ print.blblm <- function(x, ...) {
 #'
 #' @param object the model returned from the main blblm function
 #'
-#' @param confidence TRUE or FALSE
+#' @param confidence TRUE or FALSE to include confidence interval
 #' @param level confidence level
 #' @param ... additional parameters to be passed in
 #'
@@ -197,7 +197,7 @@ confint.blblm <- function(object, parm = NULL, level = 0.95, ...) {
 #' @param object the model returned from the main blblm function
 #'
 #' @param new_data new data to test
-#' @param confidence TRUE or FALSE
+#' @param confidence TRUE or FALSE to include confidence interval
 #' @param level confidence level
 #' @param ... additional parameters to be passed in
 #'

@@ -11,7 +11,7 @@
 
 \item{new_data}{new data to test}
 
-\item{confidence}{TRUE or FALSE}
+\item{confidence}{TRUE or FALSE to include confidence interval}
 
 \item{level}{confidence level}
 

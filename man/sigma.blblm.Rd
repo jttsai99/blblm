@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{the model returned from the main blblm function}
 
-\item{confidence}{TRUE or FALSE}
+\item{confidence}{TRUE or FALSE to include confidence interval}
 
 \item{level}{confidence level}
 
