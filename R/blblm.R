@@ -15,18 +15,21 @@
 utils::globalVariables(c("."))
 
 
-#' bag of little bootstrap linear regression
+#' Bag of Little Bootstrap Linear Regression
 #'
-#' create a linear regression model using bag of little bootstraps, specifying the number of parts data will be split and the number of bootstrap at each split.
+#' Create a linear regression model using bag of little bootstraps, specifying the number of parts data will be split and the number of bootstrap at each split.
 #' requires users to set plan prior to calling function when parallel = TRUE
 #'
-#' @param formula the model you would like to create
+#' @param formula the regression model you would like to create.
 #' @param data the data you will use to pass into the function
 #' @param m the number of parts you want your data to be split into.
 #' @param B number of bootstraps on each m split
 #' @param parallel perform function with parallel or not (default: FALSE)
 #'
 #' @return list of 2, B number of estimates and model fit
+#' @examples
+#' fit <- blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
+#'
 #' @export
 blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE) {
   data_list <- split_data(data, m)

@@ -2,12 +2,12 @@
 % Please edit documentation in R/blblm.R
 \name{blblm}
 \alias{blblm}
-\title{bag of little bootstrap linear regression}
+\title{Bag of Little Bootstrap Linear Regression}
 \usage{
 blblm(formula, data, m = 10, B = 5000, parallel = FALSE)
 }
 \arguments{
-\item{formula}{the model you would like to create}
+\item{formula}{the regression model you would like to create.}
 
 \item{data}{the data you will use to pass into the function}
 
@@ -21,6 +21,10 @@ blblm(formula, data, m = 10, B = 5000, parallel = FALSE)
 list of 2, B number of estimates and model fit
 }
 \description{
-create a linear regression model using bag of little bootstraps, specifying the number of parts data will be split and the number of bootstrap at each split.
+Create a linear regression model using bag of little bootstraps, specifying the number of parts data will be split and the number of bootstrap at each split.
 requires users to set plan prior to calling function when parallel = TRUE
+}
+\examples{
+fit <- blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
+
 }
