@@ -4,10 +4,10 @@
 \name{blblm-package}
 \alias{blblm-package}
 \alias{_PACKAGE}
-\title{blblm: Bag Of Little Bootstraps (Title Case)}
+\title{blblm: Bag Of Little Bootstraps Linear Model}
 \description{
-More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Using the method of bag of little bootstraps to estimate the model and its confidence intervals. 
+    Bootstrapping mimics the process of obtaining new data sets, so that we can estimate the variability of our estimate without generating additional samples.
 }
 \details{
 Linear Regression with Little Bag of Bootstraps

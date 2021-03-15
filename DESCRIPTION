@@ -1,11 +1,11 @@
 Package: blblm
 Type: Package
-Title: Bag Of Little Bootstraps (Title Case)
+Title: Bag Of Little Bootstraps Linear Model
 Version: 0.1.0
 Author: Jasper Tsai
 Maintainer: Jasper Tsai <jttsai@ucdavis.edu>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Using the method of bag of little bootstraps to estimate the model and its confidence intervals. 
+    Bootstrapping mimics the process of obtaining new data sets, so that we can estimate the variability of our estimate without generating additional samples.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -13,6 +13,8 @@ Suggests:
     testthat (>= 2.1.0)
 Imports: 
     purrr,
-    magrittr
+    magrittr,
+    furrr,
+    future
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1

@@ -7,7 +7,7 @@
 split_data(data, m)
 }
 \arguments{
-\item{data}{the data you will use}
+\item{data}{the data you will use to pass into the function}
 
 \item{m}{the number of parts you want your data to be split into.}
 }

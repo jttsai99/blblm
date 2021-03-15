@@ -1,5 +1,7 @@
 #' @import purrr
 #' @import stats
+#' @import furrr
+#' @import future
 #' @importFrom utils capture.output
 #' @aliases blblm-package
 #' @importFrom magrittr %>%
@@ -13,27 +15,34 @@
 utils::globalVariables(c("."))
 
 
-#' blblm
+#' bag of little bootstrap linear regression
 #'
-#' create a model fit using bag of little bootstraps
+#' create a linear regression model using bag of little bootstraps, specifying the number of parts data will be split and the number of bootstrap at each split.
+#' requires users to set plan prior to calling function when parallel = TRUE
 #'
 #' @param formula the model you would like to create
-#' @param data the data you will use
+#' @param data the data you will use to pass into the function
 #' @param m the number of parts you want your data to be split into.
 #' @param B number of bootstraps on each m split
 #' @param parallel perform function with parallel or not (default: FALSE)
-#' @param clusters the amount of workers when using parallel
 #'
 #' @return list of 2, B number of estimates and model fit
 #' @export
-blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE,clusters = 0) {
-  if (parallel== TRUE){
-
-  }
+blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE) {
   data_list <- split_data(data, m)
-  estimates <- map(
-    data_list,
-    ~ lm_each_subsample(formula = formula, data = ., n = nrow(data), B = B))
+  if (parallel == TRUE) {
+    estimates <- future_map(
+      data_list,
+      ~ lm_each_subsample(formula = formula, data = ., n = nrow(data), B = B),
+      .options = furrr_options(seed = TRUE)
+    )
+  } else {
+    estimates <- map(
+      data_list,
+      ~ lm_each_subsample(formula = formula, data = ., n = nrow(data), B = B)
+    )
+  }
+
   res <- list(estimates = estimates, formula = formula)
   class(res) <- "blblm"
   invisible(res)
@@ -42,7 +51,7 @@ blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE,clusters = 0
 
 #' split data into m parts of approximated equal sizes
 #'
-#' @param data the data you will use
+#' @param data the data you will use to pass into the function
 #' @param m the number of parts you want your data to be split into.
 split_data <- function(data, m) {
   idx <- sample.int(m, nrow(data), replace = TRUE)
@@ -53,7 +62,7 @@ split_data <- function(data, m) {
 #' compute the estimates
 #'
 #' @param formula the model you would like to create
-#' @param data the data you will use
+#' @param data the data you will use to pass into the function
 #' @param n number of rows of the data
 #' @param B number of bootstraps on each m split
 lm_each_subsample <- function(formula, data, n, B) {

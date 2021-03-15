@@ -2,26 +2,25 @@
 % Please edit documentation in R/blblm.R
 \name{blblm}
 \alias{blblm}
-\title{blblm}
+\title{bag of little bootstrap linear regression}
 \usage{
-blblm(formula, data, m = 10, B = 5000, parallel = FALSE, clusters = 0)
+blblm(formula, data, m = 10, B = 5000, parallel = FALSE)
 }
 \arguments{
 \item{formula}{the model you would like to create}
 
-\item{data}{the data you will use}
+\item{data}{the data you will use to pass into the function}
 
 \item{m}{the number of parts you want your data to be split into.}
 
 \item{B}{number of bootstraps on each m split}
 
 \item{parallel}{perform function with parallel or not (default: FALSE)}
-
-\item{clusters}{the amount of workers when using parallel}
 }
 \value{
 list of 2, B number of estimates and model fit
 }
 \description{
-create a model fit using bag of little bootstraps
+create a linear regression model using bag of little bootstraps, specifying the number of parts data will be split and the number of bootstrap at each split.
+requires users to set plan prior to calling function when parallel = TRUE
 }
