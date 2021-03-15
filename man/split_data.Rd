@@ -6,6 +6,11 @@
 \usage{
 split_data(data, m)
 }
+\arguments{
+\item{data}{the data you will use}
+
+\item{m}{the number of parts you want your data to be split into.}
+}
 \description{
 split data into m parts of approximated equal sizes
 }

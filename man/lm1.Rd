@@ -6,6 +6,13 @@
 \usage{
 lm1(X, y, n)
 }
+\arguments{
+\item{X}{independent variables}
+
+\item{y}{dependent varibales}
+
+\item{n}{number of rows of the data}
+}
 \description{
 compute the regression estimates for a blb dataset
 }

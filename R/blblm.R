@@ -1,6 +1,7 @@
 #' @import purrr
 #' @import stats
 #' @importFrom utils capture.output
+#' @aliases blblm-package
 #' @importFrom magrittr %>%
 #' @details
 #' Linear Regression with Little Bag of Bootstraps
@@ -12,8 +13,23 @@
 utils::globalVariables(c("."))
 
 
+#' blblm
+#'
+#' create a model fit using bag of little bootstraps
+#'
+#' @param formula the model you would like to create
+#' @param data the data you will use
+#' @param m the number of parts you want your data to be split into.
+#' @param B number of bootstraps on each m split
+#' @param parallel perform function with parallel or not (default: FALSE)
+#' @param clusters the amount of workers when using parallel
+#'
+#' @return list of 2, B number of estimates and model fit
 #' @export
-blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE) {
+blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE,clusters = 0) {
+  if (parallel== TRUE){
+
+  }
   data_list <- split_data(data, m)
   estimates <- map(
     data_list,
@@ -25,6 +41,9 @@ blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE) {
 
 
 #' split data into m parts of approximated equal sizes
+#'
+#' @param data the data you will use
+#' @param m the number of parts you want your data to be split into.
 split_data <- function(data, m) {
   idx <- sample.int(m, nrow(data), replace = TRUE)
   data %>% split(idx)
@@ -32,6 +51,11 @@ split_data <- function(data, m) {
 
 
 #' compute the estimates
+#'
+#' @param formula the model you would like to create
+#' @param data the data you will use
+#' @param n number of rows of the data
+#' @param B number of bootstraps on each m split
 lm_each_subsample <- function(formula, data, n, B) {
   # drop the original closure of formula,
   # otherwise the formula will pick a wrong variable from the global scope.
@@ -44,6 +68,10 @@ lm_each_subsample <- function(formula, data, n, B) {
 
 
 #' compute the regression estimates for a blb dataset
+#'
+#' @param X independent variables
+#' @param y dependent varibales
+#' @param n number of rows of the data
 lm1 <- function(X, y, n) {
   freqs <- as.vector(rmultinom(1, n, rep(1, nrow(X))))
   fit <- lm.wfit(X, y, freqs)
@@ -52,12 +80,16 @@ lm1 <- function(X, y, n) {
 
 
 #' compute the coefficients from fit
+#'
+#' @param fit the model returned from the main blblm function
 blbcoef <- function(fit) {
   coef(fit)
 }
 
 
 #' compute sigma from fit
+#'
+#' @param fit the model returned from the main blblm function
 blbsigma <- function(fit) {
   p <- fit$rank
   e <- fit$residuals
@@ -66,6 +98,13 @@ blbsigma <- function(fit) {
 }
 
 
+#' prints blblm model
+#'
+#' @param x the item to be printed
+#'
+#' @param ... additional parameters to be passed in
+#'
+#' @return blblm model in string
 #' @export
 #' @method print blblm
 print.blblm <- function(x, ...) {
@@ -74,6 +113,16 @@ print.blblm <- function(x, ...) {
 }
 
 
+#' return sigma value of the models
+#'
+#' @param object the model returned from the main blblm function
+#'
+#' @param confidence TRUE or FALSE
+#' @param level confidence level
+#' @param ... additional parameters to be passed in
+#'
+#' @return double, a value of sigma after putting everything back
+#'
 #' @export
 #' @method sigma blblm
 sigma.blblm <- function(object, confidence = FALSE, level = 0.95, ...) {
@@ -90,6 +139,14 @@ sigma.blblm <- function(object, confidence = FALSE, level = 0.95, ...) {
   }
 }
 
+#' regression model coefficients
+#'
+#' @param object the model returned from the main blblm function
+#'
+#' @param ... additional parameters to be passed in
+#'
+#' @return matrix of the regression model coefficients
+#'
 #' @export
 #' @method coef blblm
 coef.blblm <- function(object, ...) {
@@ -98,6 +155,16 @@ coef.blblm <- function(object, ...) {
 }
 
 
+#' confidence interval of the selected independent variables
+#'
+#' @param object the model returned from the main blblm function
+#'
+#' @param parm the independent variables you want the confidence interval for
+#' @param level confidence level
+#' @param ... additional parameters to be passed in
+#'
+#' @return matrix of the lower and upper quantiles of the selected independent variables.
+#'
 #' @export
 #' @method confint blblm
 confint.blblm <- function(object, parm = NULL, level = 0.95, ...) {
@@ -116,6 +183,16 @@ confint.blblm <- function(object, parm = NULL, level = 0.95, ...) {
   out
 }
 
+#' predict the fit of the blblm model with new data
+#'
+#' @param object the model returned from the main blblm function
+#'
+#' @param new_data new data to test
+#' @param confidence TRUE or FALSE
+#' @param level confidence level
+#' @param ... additional parameters to be passed in
+#'
+#' @return the fitted value of the independent variable
 #' @export
 #' @method predict blblm
 predict.blblm <- function(object, new_data, confidence = FALSE, level = 0.95, ...) {

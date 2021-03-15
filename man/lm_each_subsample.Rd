@@ -6,6 +6,15 @@
 \usage{
 lm_each_subsample(formula, data, n, B)
 }
+\arguments{
+\item{formula}{the model you would like to create}
+
+\item{data}{the data you will use}
+
+\item{n}{number of rows of the data}
+
+\item{B}{number of bootstraps on each m split}
+}
 \description{
 compute the estimates
 }

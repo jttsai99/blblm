@@ -2,8 +2,8 @@
 % Please edit documentation in R/blblm.R
 \docType{package}
 \name{blblm-package}
-\alias{blblm}
 \alias{blblm-package}
+\alias{_PACKAGE}
 \title{blblm: Bag Of Little Bootstraps (Title Case)}
 \description{
 More about what it does (maybe more than one line)
