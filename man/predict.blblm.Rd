@@ -11,9 +11,9 @@
 
 \item{new_data}{new data to test}
 
-\item{confidence}{TRUE or FALSE to include confidence interval}
+\item{confidence}{boolean to include confidence interval}
 
-\item{level}{confidence level}
+\item{level}{confidence level between 0 and 1}
 
 \item{...}{additional parameters to be passed in}
 }

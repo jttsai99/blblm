@@ -17,16 +17,16 @@ utils::globalVariables(c("."))
 
 #' Bag of Little Bootstrap Linear Regression
 #'
-#' Create a linear regression model using bag of little bootstraps, specifying the number of parts data will be split and the number of bootstrap at each split.
-#' requires users to set plan prior to calling function when parallel = TRUE
+#' Bag of Little Bootstraps is used to fit a linear regression model.
+#' If parallel = TRUE, prior to the use of this function, users will need to run the function "plan" from the furrr package which specifies the number of workers (cores) being utilized for parallelization.
 #'
 #' @param formula the regression model you would like to create.
-#' @param data the data you will use to pass into the function
-#' @param m the number of parts you want your data to be split into.
-#' @param B number of bootstraps on each m split
-#' @param parallel perform function with parallel or not (default: FALSE)
+#' @param data the data you would like to analyze.
+#' @param m the number of sub-samples you want to divide your data into.
+#' @param B number of bootstraps performed on each sub-sample.
+#' @param parallel indicates if you would like to utilize multiple cores to run this function.
 #'
-#' @return list of 2, B number of estimates and model fit
+#' @return blblm returns a list of B number of estimated coefficients for the regression, B number of standard deviations of the errors, and the formula used to fit the model.
 #' @examples
 #' fit <- blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
 #'
@@ -54,8 +54,8 @@ blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE) {
 
 #' split data into m parts of approximated equal sizes
 #'
-#' @param data the data you will use to pass into the function
-#' @param m the number of parts you want your data to be split into.
+#' @param data the data you would like to analyze.
+#' @param m the number of sub-samples you want to divide your data into.
 split_data <- function(data, m) {
   idx <- sample.int(m, nrow(data), replace = TRUE)
   data %>% split(idx)
@@ -64,10 +64,10 @@ split_data <- function(data, m) {
 
 #' compute the estimates
 #'
-#' @param formula the model you would like to create
-#' @param data the data you will use to pass into the function
-#' @param n number of rows of the data
-#' @param B number of bootstraps on each m split
+#' @param formula the regression model you would like to create.
+#' @param data the data you would like to analyze.
+#' @param n number of rows of the data.
+#' @param B number of bootstraps performed on each sub-sample.
 lm_each_subsample <- function(formula, data, n, B) {
   # drop the original closure of formula,
   # otherwise the formula will pick a wrong variable from the global scope.
@@ -81,8 +81,8 @@ lm_each_subsample <- function(formula, data, n, B) {
 
 #' compute the regression estimates for a blb dataset
 #'
-#' @param X independent variables
-#' @param y dependent varibales
+#' @param X independent variables in the data
+#' @param y dependent variables in the data
 #' @param n number of rows of the data
 lm1 <- function(X, y, n) {
   freqs <- as.vector(rmultinom(1, n, rep(1, nrow(X))))
@@ -93,7 +93,7 @@ lm1 <- function(X, y, n) {
 
 #' compute the coefficients from fit
 #'
-#' @param fit the model returned from the main blblm function
+#' @param fit the model returned from the blblm function
 blbcoef <- function(fit) {
   coef(fit)
 }
@@ -101,7 +101,7 @@ blbcoef <- function(fit) {
 
 #' compute sigma from fit
 #'
-#' @param fit the model returned from the main blblm function
+#' @param fit the model returned from the blblm function
 blbsigma <- function(fit) {
   p <- fit$rank
   e <- fit$residuals
@@ -116,7 +116,7 @@ blbsigma <- function(fit) {
 #'
 #' @param ... additional parameters to be passed in
 #'
-#' @return blblm model in string
+#' @return NULL
 #' @export
 #' @method print blblm
 print.blblm <- function(x, ...) {
@@ -129,11 +129,11 @@ print.blblm <- function(x, ...) {
 #'
 #' @param object the model returned from the main blblm function
 #'
-#' @param confidence TRUE or FALSE to include confidence interval
-#' @param level confidence level
+#' @param confidence boolean to include confidence interval
+#' @param level confidence level between 0 and 1
 #' @param ... additional parameters to be passed in
 #'
-#' @return double, a value of sigma after putting everything back
+#' @return a value of sigma after putting everything back from the bootstraps
 #'
 #' @export
 #' @method sigma blblm
@@ -153,7 +153,7 @@ sigma.blblm <- function(object, confidence = FALSE, level = 0.95, ...) {
 
 #' regression model coefficients
 #'
-#' @param object the model returned from the main blblm function
+#' @param object the model returned from the blblm function
 #'
 #' @param ... additional parameters to be passed in
 #'
@@ -200,8 +200,8 @@ confint.blblm <- function(object, parm = NULL, level = 0.95, ...) {
 #' @param object the model returned from the main blblm function
 #'
 #' @param new_data new data to test
-#' @param confidence TRUE or FALSE to include confidence interval
-#' @param level confidence level
+#' @param confidence boolean to include confidence interval
+#' @param level confidence level between 0 and 1
 #' @param ... additional parameters to be passed in
 #'
 #' @return the fitted value of the independent variable

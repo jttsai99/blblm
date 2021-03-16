@@ -9,20 +9,20 @@ blblm(formula, data, m = 10, B = 5000, parallel = FALSE)
 \arguments{
 \item{formula}{the regression model you would like to create.}
 
-\item{data}{the data you will use to pass into the function}
+\item{data}{the data you would like to analyze.}
 
-\item{m}{the number of parts you want your data to be split into.}
+\item{m}{the number of sub-samples you want to divide your data into.}
 
-\item{B}{number of bootstraps on each m split}
+\item{B}{number of bootstraps performed on each sub-sample.}
 
-\item{parallel}{perform function with parallel or not (default: FALSE)}
+\item{parallel}{indicates if you would like to utilize multiple cores to run this function.}
 }
 \value{
-list of 2, B number of estimates and model fit
+blblm returns a list of B number of estimated coefficients for the regression, B number of standard deviations of the errors, and the formula used to fit the model.
 }
 \description{
-Create a linear regression model using bag of little bootstraps, specifying the number of parts data will be split and the number of bootstrap at each split.
-requires users to set plan prior to calling function when parallel = TRUE
+Bag of Little Bootstraps is used to fit a linear regression model.
+If parallel = TRUE, prior to the use of this function, users will need to run the function "plan" from the furrr package which specifies the number of workers (cores) being utilized for parallelization.
 }
 \examples{
 fit <- blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)

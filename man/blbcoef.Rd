@@ -7,7 +7,7 @@
 blbcoef(fit)
 }
 \arguments{
-\item{fit}{the model returned from the main blblm function}
+\item{fit}{the model returned from the blblm function}
 }
 \description{
 compute the coefficients from fit

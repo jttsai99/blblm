@@ -7,9 +7,9 @@
 split_data(data, m)
 }
 \arguments{
-\item{data}{the data you will use to pass into the function}
+\item{data}{the data you would like to analyze.}
 
-\item{m}{the number of parts you want your data to be split into.}
+\item{m}{the number of sub-samples you want to divide your data into.}
 }
 \description{
 split data into m parts of approximated equal sizes

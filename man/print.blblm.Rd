@@ -11,9 +11,6 @@
 
 \item{...}{additional parameters to be passed in}
 }
-\value{
-blblm model in string
-}
 \description{
 prints blblm model
 }

@@ -7,13 +7,13 @@
 lm_each_subsample(formula, data, n, B)
 }
 \arguments{
-\item{formula}{the model you would like to create}
+\item{formula}{the regression model you would like to create.}
 
-\item{data}{the data you will use to pass into the function}
+\item{data}{the data you would like to analyze.}
 
-\item{n}{number of rows of the data}
+\item{n}{number of rows of the data.}
 
-\item{B}{number of bootstraps on each m split}
+\item{B}{number of bootstraps performed on each sub-sample.}
 }
 \description{
 compute the estimates

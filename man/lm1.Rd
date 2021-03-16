@@ -7,9 +7,9 @@
 lm1(X, y, n)
 }
 \arguments{
-\item{X}{independent variables}
+\item{X}{independent variables in the data}
 
-\item{y}{dependent varibales}
+\item{y}{dependent variables in the data}
 
 \item{n}{number of rows of the data}
 }

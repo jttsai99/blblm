@@ -7,7 +7,7 @@
 \method{coef}{blblm}(object, ...)
 }
 \arguments{
-\item{object}{the model returned from the main blblm function}
+\item{object}{the model returned from the blblm function}
 
 \item{...}{additional parameters to be passed in}
 }
