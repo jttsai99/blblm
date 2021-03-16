@@ -11,7 +11,7 @@ lm_each_subsample(formula, data, n, B)
 
 \item{data}{the data you would like to analyze.}
 
-\item{n}{number of rows of the data.}
+\item{n}{number of rows of the original data.}
 
 \item{B}{number of bootstraps performed on each sub-sample.}
 }

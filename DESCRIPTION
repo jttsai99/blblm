@@ -12,7 +12,10 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
-    testthat (>= 3.0.0)
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    tidyverse
 Imports: 
     purrr,
     magrittr,
@@ -21,3 +24,4 @@ Imports:
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Config/testthat/edition: 3
+VignetteBuilder: knitr

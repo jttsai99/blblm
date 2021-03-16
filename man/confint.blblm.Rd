@@ -11,7 +11,7 @@
 
 \item{parm}{the independent variables you want the confidence interval for}
 
-\item{level}{confidence level}
+\item{level}{confidence level between 0 and 1}
 
 \item{...}{additional parameters to be passed in}
 }

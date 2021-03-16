@@ -1,0 +1,95 @@
+---
+title: "Package Blblm Detail"
+author: "Jasper Tsai"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{project-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+# load packages
+library(blblm)
+library(tidyverse)
+## crucial to allow parallel process to utilize multiple cores
+library(furrr)
+
+# set up random data
+n <- 10000
+data <- data.frame(x = sample(1:1000, n, replace = TRUE), y = sample(1:1000, n, replace = TRUE))
+new_data <- data.frame(x = sample(1:1000, 4, replace = TRUE))
+```
+
+## blblm function
+The function first splits your original data into *m* sub-samples the user specifies. It will then fit *B* bootstraps to each sub-samples,each bootstrap having the same size as the original data. The function calculates the estimates for coefficients and standard deviation for the bootstraps and return them as a list of *B* estimates of coefficients and standard deviation.
+```{r blblm}
+# create multiple workers to utilize parallel
+suppressWarnings(plan(multiprocess, workers = 4))
+# fitting the model with blblm
+blblm_model <- blblm(y ~ x, data, m = 5, B = 2500, parallel = TRUE)
+```
+
+Here we have displayed the first 3 estimates for *B*= 2500 number of bootstraps. Notice that it is a list within a list showing coefficients and the sigma (standard deviations) estimates.
+```{r first5}
+#showing only the first 5 estimates
+head(blblm_model$estimates[[1]], 3)
+```
+
+Added the argument *parallel* to allow the utilization for multiple cores to speed up computation time.
+```{r blblmdemo, eval= FALSE}
+blblm(y ~ x, data, m = 5, B = 2500, parallel = TRUE)
+```
+
+The results below, show how *parallel* = TRUE speeds up computation speed significantly.
+```{r speed}
+system.time(blblm(y ~ x, data, m = 5, B = 2000, parallel = TRUE))
+system.time(blblm(y ~ x, data, m = 5, B = 2000))
+```
+
+The following computes the estimated coefficients for the population, by averaging the *B* bootstrap estimates from the model
+```{r coefficients}
+coef(blblm_model)
+```
+
+Similar to coefficients, the estimated standard deviation for population is computed by averaging the *B* bootstrap estimates from blblm model. The function, sigma() also has additional arguments *confidence* that returns default 95% confidence interval of sigma unless you also include *level* as argument to overwrite the default 95%.
+
+```{r sigma}
+sigma(blblm_model)
+sigma(blblm_model, confidence = TRUE)
+```
+
+The following calculates the confidence interval of the blblm model. Optional to pass additional *level* argument to overwrite the default 95% confidence level.
+```{r confidence_interval}
+# 95% confidence interval
+confint(blblm_model) 
+
+# 90% confidence interval
+confint(blblm_model, level = 0.90)
+```
+
+Lastly, the predict() function takes in two primary parameters. The model you previously fitted and the new data you would like fitted to the model to predict its response. Additional parameters such as *confidence* to include the confidence interval and *level* to change the level of confidence could be added to the function
+```{r predict}
+predict(blblm_model, new_data)
+predict(blblm_model, new_data, confidence = TRUE, level = 0.90)
+```
+
+
+
+
+
+
+
+
+
+
+
+

@@ -29,7 +29,6 @@ utils::globalVariables(c("."))
 #' @return blblm returns a list of B number of estimated coefficients for the regression, B number of standard deviations of the errors, and the formula used to fit the model.
 #' @examples
 #' fit <- blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
-#'
 #' @export
 blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE) {
   data_list <- split_data(data, m)
@@ -66,7 +65,7 @@ split_data <- function(data, m) {
 #'
 #' @param formula the regression model you would like to create.
 #' @param data the data you would like to analyze.
-#' @param n number of rows of the data.
+#' @param n number of rows of the original data.
 #' @param B number of bootstraps performed on each sub-sample.
 lm_each_subsample <- function(formula, data, n, B) {
   # drop the original closure of formula,
@@ -141,7 +140,7 @@ sigma.blblm <- function(object, confidence = FALSE, level = 0.95, ...) {
   est <- object$estimates
   sigma <- mean(map_dbl(est, ~ mean(map_dbl(., "sigma"))))
   if (confidence) {
-    alpha <- 1 - 0.95
+    alpha <- 1 - level
     limits <- est %>%
       map_mean(~ quantile(map_dbl(., "sigma"), c(alpha / 2, 1 - alpha / 2))) %>%
       set_names(NULL)
@@ -172,7 +171,7 @@ coef.blblm <- function(object, ...) {
 #' @param object the model returned from the main blblm function
 #'
 #' @param parm the independent variables you want the confidence interval for
-#' @param level confidence level
+#' @param level confidence level between 0 and 1
 #' @param ... additional parameters to be passed in
 #'
 #' @return matrix of the lower and upper quantiles of the selected independent variables.

@@ -26,5 +26,4 @@ If parallel = TRUE, prior to the use of this function, users will need to run th
 }
 \examples{
 fit <- blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
-
 }
