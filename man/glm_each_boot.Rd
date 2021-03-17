@@ -6,6 +6,13 @@
 \usage{
 glm_each_boot(formula, data, n)
 }
+\arguments{
+\item{formula}{the regression model you would like to create.}
+
+\item{data}{the data you would like to analyze.}
+
+\item{n}{number of rows of the original data.}
+}
 \description{
 Under BLB, this computes regression estimates.
 }

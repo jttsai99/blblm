@@ -6,6 +6,13 @@
 \usage{
 glm1(formula, data, freqs)
 }
+\arguments{
+\item{formula}{the regression model you would like to create.}
+
+\item{data}{the data you would like to analyze.}
+
+\item{freqs}{frequency you want to create glm model for}
+}
 \description{
 creates the glm model for each repetition and determines the coefficients and sigmas of each BLB.
 }

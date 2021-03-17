@@ -2,10 +2,19 @@
 % Please edit documentation in R/blbglm.R
 \name{glm_each_subsample}
 \alias{glm_each_subsample}
-\title{This computes estimates for the partitioned sub-samples from split_data.}
+\title{This computes estimates for the each sub-samples.}
 \usage{
 glm_each_subsample(formula, data, n, B)
 }
+\arguments{
+\item{formula}{the regression model you would like to create.}
+
+\item{data}{the data you would like to analyze.}
+
+\item{n}{number of rows of the original data.}
+
+\item{B}{number of bootstraps performed on each sub-sample.}
+}
 \description{
-This computes estimates for the partitioned sub-samples from split_data.
+This computes estimates for the each sub-samples.
 }

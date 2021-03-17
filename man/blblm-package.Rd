@@ -2,9 +2,9 @@
 % Please edit documentation in R/blbglm.R, R/blblm.R
 \docType{package}
 \name{blblm-package}
-\alias{blblm}
 \alias{blblm-package}
 \alias{_PACKAGE}
+\alias{blbglm-package}
 \title{blblm: Bag Of Little Bootstraps Linear Model}
 \description{
 This package uses the method of Bag of Little Bootstraps to estimate the model,its confidence intervals, and its standard deviation. 

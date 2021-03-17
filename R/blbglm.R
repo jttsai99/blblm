@@ -3,6 +3,7 @@
 #' @import furrr
 #' @import future
 #' @importFrom utils capture.output
+#' @aliases blbglm-package
 #' @importFrom magrittr %>%
 #' @details
 #' Logistic Regression with Little Bag of Bootstraps
@@ -13,8 +14,20 @@
 # from https://github.com/jennybc/googlesheets/blob/master/R/googlesheets.R
 utils::globalVariables(c("."))
 
+#' Bag of Little Bootstrap Logistic Regression
+#'
+#' Bag of Little Bootstraps is used to fit a logistic regression model.
+#' If parallel = TRUE, prior to the use of this function, users will need to run the function "plan" from the furrr package which specifies the number of workers (cores) being utilized for parallelization.
+#'
+#' @param formula the regression model you would like to create.
+#' @param data the data you would like to analyze.
+#' @param m the number of sub-samples you want to divide your data into.
+#' @param B number of bootstraps performed on each sub-sample.
+#' @param parallel indicates if you would like to utilize multiple cores to run this function.
+#'
+#' @return blbglm returns a list of B number of estimated coefficients for the regression, B number of standard deviations of the errors, and the formula used to fit the model.
 #' @export
-blglm <- function(formula, data, m = 5, B = 1000, parallel = FALSE) {
+blbglm <- function(formula, data, m = 5, B = 1000, parallel = FALSE) {
   data_list <- split_data(data, m)
   if (parallel == TRUE) {
     estimates <- future_map(
@@ -30,7 +43,7 @@ blglm <- function(formula, data, m = 5, B = 1000, parallel = FALSE) {
   }
 
   res <- list(estimates = estimates, formula = formula)
-  class(res) <- "blglm"
+  class(res) <- "blbglm"
   invisible(res)
 }
 
@@ -47,12 +60,21 @@ split_data <- function(data, m) {
 
 
 
-#' This computes estimates for the partitioned sub-samples from split_data.
+#' This computes estimates for the each sub-samples.
+#'
+#' @param formula the regression model you would like to create.
+#' @param data the data you would like to analyze.
+#' @param n number of rows of the original data.
+#' @param B number of bootstraps performed on each sub-sample.
 glm_each_subsample <- function(formula, data, n, B) {
   replicate(B, glm_each_boot(formula, data, n), simplify = FALSE)
 }
 
 #' Under BLB, this computes regression estimates.
+#'
+#' @param formula the regression model you would like to create.
+#' @param data the data you would like to analyze.
+#' @param n number of rows of the original data.
 glm_each_boot <- function(formula, data, n) {
   freqs <- rmultinom(1, n, rep(1, nrow(data)))
   glm1(formula, data, freqs)
@@ -60,9 +82,13 @@ glm_each_boot <- function(formula, data, n) {
 
 
 #' creates the glm model for each repetition and determines the coefficients and sigmas of each BLB.
+#'
+#' @param formula the regression model you would like to create.
+#' @param data the data you would like to analyze.
+#' @param freqs frequency you want to create glm model for
 glm1 <- function(formula, data, freqs) {
   # drop the original closure of formula,
-  # otherwise the formula will pick wrong variables from a parent scope.
+  # otherwise the formula will pick a wrong variable from the global scope.
   environment(formula) <- environment()
   fit <- glm(formula, data, weights = freqs, family = "binomial")
   list(coef = blbcoef(fit), sigma = blbsigma(fit))
@@ -71,15 +97,15 @@ glm1 <- function(formula, data, freqs) {
 
 #' compute the coefficients from fit
 #'
-#' @param fit the model returned from the blglm function
+#' @param fit the model returned from the blbglm function
 blbcoef <- function(fit) {
-  coef <- fit$coefficients
+  coef(fit)
 }
 
 
 #' compute sigma from fit
 #'
-#' @param fit the model returned from the blglm function
+#' @param fit the model returned from the blbglm function
 blbsigma <- function(fit) {
   p <- fit$rank
   e <- fit$residuals
@@ -88,7 +114,7 @@ blbsigma <- function(fit) {
 }
 
 
-#' prints blglm model
+#' prints blbglm model
 #'
 #' @param x the item to be printed
 #'
@@ -96,13 +122,27 @@ blbsigma <- function(fit) {
 #'
 #' @return NULL
 #' @export
-#' @method print blglm
-print.blglm <- function(x, ...) {
-  cat("blglm model:", capture.output(x$formula))
+#' @method print blbglm
+print.blbglm <- function(x, ...) {
+  cat("blbglm model:", capture.output(x$formula))
   cat("\n")
 }
 
-sigma.blglm <- function(object, confidence = FALSE, level = 0.95, ...) {
+
+
+#' return sigma value of the models
+#'
+#' @param object the model returned from the main blbglm function
+#'
+#' @param confidence boolean to include confidence interval
+#' @param level confidence level between 0 and 1
+#' @param ... additional parameters to be passed in
+#'
+#' @return a value of sigma after putting everything back from the bootstraps
+#'
+#' @export
+#' @method sigma blbglm
+sigma.blbglm <- function(object, confidence = FALSE, level = 0.95, ...) {
   est <- object$estimates
   sigma <- mean(map_dbl(est, ~ mean(map_dbl(., "sigma"))))
   if (confidence) {
@@ -116,15 +156,74 @@ sigma.blglm <- function(object, confidence = FALSE, level = 0.95, ...) {
   }
 }
 
-coef.blglm <- function(object, ...) {
+#' regression model coefficients
+#'
+#' @param object the model returned from the blbglm function
+#'
+#' @param ... additional parameters to be passed in
+#'
+#' @return matrix of the regression model coefficients
+#'
+#' @export
+#' @method coef blbglm
+coef.blbglm <- function(object, ...) {
   est <- object$estimates
   map_mean(est, ~ map_cbind(., "coef") %>% rowMeans())
 }
 
 
+#' confidence interval of the selected independent variables
+#'
+#' @param object the model returned from the main blbglm function
+#'
+#' @param parm the independent variables you want the confidence interval for
+#' @param level confidence level between 0 and 1
+#' @param ... additional parameters to be passed in
+#'
+#' @return matrix of the lower and upper quantiles of the selected independent variables.
+#'
+#' @export
+#' @method confint blbglm
+confint.blbglm <- function(object, parm = NULL, level = 0.95, ...) {
+  if (is.null(parm)) {
+    parm <- attr(terms(object$formula), "term.labels")
+  }
+  alpha <- 1 - level
+  est <- object$estimates
+  out <- map_rbind(parm, function(p) {
+    map_mean(est, ~ map_dbl(., list("coef", p)) %>% quantile(c(alpha / 2, 1 - alpha / 2)))
+  })
+  if (is.vector(out)) {
+    out <- as.matrix(t(out))
+  }
+  dimnames(out)[[1]] <- parm
+  out
+}
 
 
-
+#' predict the fit of the blbglm model with new data
+#'
+#' @param object the model returned from the main blbglm function
+#'
+#' @param new_data new data to test
+#' @param confidence boolean to include confidence interval
+#' @param level confidence level between 0 and 1
+#' @param ... additional parameters to be passed in
+#'
+#' @return the fitted value of the independent variable
+#' @export
+#' @method predict blbglm
+predict.blbglm <- function(object, new_data, confidence = FALSE, level = 0.95, ...) {
+  est <- object$estimates
+  X <- model.matrix(reformulate(attr(terms(object$formula), "term.labels")), new_data)
+  if (confidence) {
+    map_mean(est, ~ map_cbind(., ~ X %*% .$coef) %>%
+      apply(1, mean_lwr_upr, level = level) %>%
+      t())
+  } else {
+    map_mean(est, ~ map_cbind(., ~ X %*% .$coef) %>% rowMeans())
+  }
+}
 
 
 
