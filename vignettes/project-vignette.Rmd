@@ -30,7 +30,7 @@ new_data <- data.frame(x = sample(1:1000, 4, replace = TRUE))
 ```
 
 ## blblm function
-The function first splits your original data into *m* sub-samples the user specifies. It will then fit *B* bootstraps to each sub-samples,each bootstrap having the same size as the original data. The function calculates the estimates for coefficients and standard deviation for the bootstraps and return them as a list of *B* estimates of coefficients and standard deviation.
+The function first splits your original data into *m* sub-samples which the user specifies. It will then fit *B* bootstraps to each sub-sample, each bootstrap having the same size as the original data. The function calculates the estimates for the regression coefficients and standard deviations for the bootstraps and returns them as a list of *B* estimates of coefficients and standard deviations.
 ```{r blblm}
 # create multiple workers to utilize parallel
 suppressWarnings(plan(multiprocess, workers = 4))
@@ -38,36 +38,36 @@ suppressWarnings(plan(multiprocess, workers = 4))
 blblm_model <- blblm(y ~ x, data, m = 5, B = 2500, parallel = TRUE)
 ```
 
-Here we have displayed the first 3 estimates for *B*= 2500 number of bootstraps. Notice that it is a list within a list showing coefficients and the sigma (standard deviations) estimates.
+These are the first 3 estimates for *B*= 2500 number of bootstraps. Notice that it is a list within a list, showing the estimated regression coefficients and estimated sigmas (standard deviations).
 ```{r first5}
 #showing only the first 5 estimates
 head(blblm_model$estimates[[1]], 3)
 ```
 
-Added the argument *parallel* to allow the utilization for multiple cores to speed up computation time.
+The argument *parallel* allows the utilization for multiple cores to speed up computation time.
 ```{r blblmdemo, eval= FALSE}
 blblm(y ~ x, data, m = 5, B = 2500, parallel = TRUE)
 ```
 
-The results below, show how *parallel* = TRUE speeds up computation speed significantly.
+The results below show how *parallel* = TRUE speeds up computation speed significantly.
 ```{r speed}
 system.time(blblm(y ~ x, data, m = 5, B = 2000, parallel = TRUE))
 system.time(blblm(y ~ x, data, m = 5, B = 2000))
 ```
 
-The following computes the estimated coefficients for the population, by averaging the *B* bootstrap estimates from the model
+The following computes the estimated coefficients for the population by averaging the *B* bootstrap estimates from the model.
 ```{r coefficients}
 coef(blblm_model)
 ```
 
-Similar to coefficients, the estimated standard deviation for population is computed by averaging the *B* bootstrap estimates from blblm model. The function, sigma() also has additional arguments *confidence* that returns default 95% confidence interval of sigma unless you also include *level* as argument to overwrite the default 95%.
+Similar to the regression coefficients, the estimated standard deviation for population is computed by averaging the *B* bootstrap estimates from blblm model. The function, sigma(), also has additional arguments, *confidence* and *level*. *confidence* returns the default 95% confidence interval of sigma, and *level* allows you to overwrite the default 95% confidence level.
 
 ```{r sigma}
 sigma(blblm_model)
 sigma(blblm_model, confidence = TRUE)
 ```
 
-The following calculates the confidence interval of the blblm model. Optional to pass additional *level* argument to overwrite the default 95% confidence level.
+The following calculates the confidence interval of the blblm model. You can use the *level* argument to overwrite the default 95% confidence level.
 ```{r confidence_interval}
 # 95% confidence interval
 confint(blblm_model) 
@@ -76,7 +76,7 @@ confint(blblm_model)
 confint(blblm_model, level = 0.90)
 ```
 
-Lastly, the predict() function takes in two primary parameters. The model you previously fitted and the new data you would like fitted to the model to predict its response. Additional parameters such as *confidence* to include the confidence interval and *level* to change the level of confidence could be added to the function
+Lastly, the predict() function takes in two primary parameters. The model you previously fitted, and the new data you would like to fit to the model to predict its response. Additional parameters *confidence* and *level* are included. *confidence* returns the default 95% confidence interval of sigma, and *level* allows you to overwrite the default 95% confidence level.
 ```{r predict}
 predict(blblm_model, new_data)
 predict(blblm_model, new_data, confidence = TRUE, level = 0.90)
