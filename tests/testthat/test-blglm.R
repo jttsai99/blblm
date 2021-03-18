@@ -13,20 +13,20 @@ test_that("Default Logistic Model Estimate works", {
   expect_equal(coef(log_model), coef(blbglm_model), tolerance = .1)
 })
 
-# test_that("Parallel providing faster speed works", {
-#   # generate large data
-#   n <- 10000
-#   data <- data.frame(x = sample(1:1000, n, replace = TRUE), y = sample(0:1, n, replace = TRUE))
-#
-#   # setup workers for parallel
-#   plan(multiprocess, workers = 4)
-#
-#   # run with multiple cpu (parallel) and get elapse time
-#   parallel_speed <- system.time(blbglm(y ~ x, data, m = 5, B = 2000, parallel = TRUE))[3]
-#
-#   # run without parallel
-#   regular_speed <- system.time(blbglm(y ~ x, data, m = 5, B = 2000, parallel = FALSE))[3]
-#
-#   # parallel time is shorter than regular time
-#   expect_lte(parallel_speed, regular_speed)
-# })
+test_that("Parallel providing faster speed works", {
+  # generate large data
+  n <- 10000
+  data <- data.frame(x = sample(1:1000, n, replace = TRUE), y = sample(0:1, n, replace = TRUE))
+
+  # setup workers for parallel
+  plan(multiprocess, workers = 4)
+
+  # run with multiple cpu (parallel) and get elapse time
+  parallel_speed <- system.time(blbglm(y ~ x, data, m = 5, B = 2000, parallel = TRUE))[3]
+
+  # run without parallel
+  regular_speed <- system.time(blbglm(y ~ x, data, m = 5, B = 2000, parallel = FALSE))[3]
+
+  # parallel time is shorter than regular time
+  expect_lte(parallel_speed, regular_speed)
+})

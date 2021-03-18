@@ -24,8 +24,8 @@ library(tidyverse)
 library(furrr)
 
 # set up random data
-n <- 10000
-data <- data.frame(x = sample(1:1000, n, replace = TRUE), y = sample(1:1000, n, replace = TRUE))
+n <- 1000
+data <- data.frame(x = sample(1:1000, n, replace = TRUE), y = sample(0:1, n, replace = TRUE))
 new_data <- data.frame(x = sample(1:1000, 4, replace = TRUE))
 ```
 
@@ -39,8 +39,8 @@ blblm_model <- blblm(y ~ x, data, m = 5, B = 2500, parallel = TRUE)
 ```
 
 These are the first 3 estimates for *B*= 2500 number of bootstraps. Notice that it is a list within a list, showing the estimated regression coefficients and estimated sigmas (standard deviations).
-```{r first5}
-#showing only the first 5 estimates
+```{r first3}
+#showing only the first 3 estimates
 head(blblm_model$estimates[[1]], 3)
 ```
 

@@ -1,0 +1,85 @@
+---
+title: "Package Blbglm Detail"
+author: "Jasper Tsai"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{blbglm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+# load packages
+library(blblm)
+library(tidyverse)
+## crucial to allow parallel process to utilize multiple cores
+library(furrr)
+
+# set up random data
+n <- 1000
+data <- data.frame(x = sample(1:1000, n, replace = TRUE), y = sample(0:1, n, replace = TRUE))
+new_data <- data.frame(x = sample(1:1000, 4, replace = TRUE))
+```
+
+## blbglm function
+The following function works similarly to the blbglm function. However,in order to fit the logistic regression onto a data, your response values must be binary. Typically, this is used when you want to predict two different outcomes given the data.
+
+The following function first splits your original data into *m* sub-samples which the user specifies. It will then fit *B* bootstraps to each sub-sample, each bootstrap having the same size as the original data. The function calculates the estimates for the regression coefficients and standard deviations for the bootstraps and returns them as a list of *B* estimates of coefficients and standard deviations.
+
+```{r blbglm}
+# fitting the model with blbglm
+blbglm_model <- blbglm(y ~ x, data, m = 5, B = 500)
+```
+
+
+These are the first 3 estimates for *B*= 500 number of bootstraps. Notice that it is a list within a list, showing the estimated regression coefficients and estimated sigmas (standard deviations).
+```{r first3}
+#showing only the first 3 estimates
+head(blbglm_model$estimates[[1]], 3)
+```
+
+
+
+The argument *parallel* allows the utilization for multiple cores to speed up computation time. Unfortunately, currently there is a bug between the global package and furrr, where future_map() is unable to find the function ```glm_each_subsample```, thus causing an error in the function.
+
+[Further read of issue](https://github.com/HenrikBengtsson/future/issues/137)
+
+
+```{r blbglmdemo, eval= FALSE}
+blbglm(y ~ x, data, m = 5, B = 500, parallel = FALSE)
+```
+
+The following computes the estimated coefficients for the population by averaging the *B* bootstrap estimates from the model.
+```{r coefficients}
+coef(blbglm_model)
+```
+
+Similar to the regression coefficients, the estimated standard deviation for population is computed by averaging the *B* bootstrap estimates from blbglm model. The function, sigma(), also has additional arguments, *confidence* and *level*. *confidence* returns the default 95% confidence interval of sigma, and *level* allows you to overwrite the default 95% confidence level.
+
+```{r sigma}
+sigma(blbglm_model)
+sigma(blbglm_model, confidence = TRUE)
+```
+
+The following calculates the confidence interval of the blbglm model. You can use the *level* argument to overwrite the default 95% confidence level.
+```{r confidence_interval}
+# 95% confidence interval
+confint(blbglm_model) 
+
+# 90% confidence interval
+confint(blbglm_model, level = 0.90)
+```
+
+Lastly, the predict() function takes in two primary parameters. The model you previously fitted, and the new data you would like to fit to the model to predict its response. Additional parameters *confidence* and *level* are included. *confidence* returns the default 95% confidence interval of sigma, and *level* allows you to overwrite the default 95% confidence level.
+```{r predict}
+predict(blbglm_model, new_data)
+predict(blbglm_model, new_data, confidence = TRUE, level = 0.90)
+```
