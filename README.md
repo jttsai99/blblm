@@ -2,7 +2,8 @@
 
 <!-- badges: start -->
 <!-- badges: end -->
-developed by Jasper T
+This package is used to fit linear or logistic regressions on sample data. Using Bag of Little Bootstrps to estimate coefficients and standard deviations. Ultimately to approximate the population without needing additional samples.
+
 ## To load and build Package onto R
 ``` r
 library(devtools)
