@@ -1,12 +1,17 @@
-# blblm
+# Blblm
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-## Examples
-
+## To load and build Package onto R
 ``` r
+library(devtools)
+devtools::install_github("jttsai99/blblm")
 library(blblm)
+```
+
+## Examples
+``` r
 fit <- blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
 coef(fit)
 #> (Intercept)          wt          hp       wt:hp 
