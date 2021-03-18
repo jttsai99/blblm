@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 <!-- badges: end -->
-
+developed by Jasper T
 ## To load and build Package onto R
 ``` r
 library(devtools)
