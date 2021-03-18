@@ -1,5 +1,5 @@
 ---
-title: "Package Blbglm Detail"
+title: "Blbglm Detail"
 author: "Jasper Tsai"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
